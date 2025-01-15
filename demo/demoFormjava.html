@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Sinh Viên</title>
+    <style>
+        #nhan {
+            height: 40px;
+            width: 150px;
+            float: left;
+        }
+        
+        .inp {
+            height: 40px;
+            width: 200px;
+            float: left;
+        }
+        
+        .clr {
+            clear: both;
+        }
+        
+        .error {
+            color: red;
+            font-size: 12px;
+        }
+        
+        .success {
+            color: green;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <form action="/submit_form" method="post" onsubmit="return validateForm();">
+        <div id="nhan">
+            <label for="ma-sinh-vien">Mã Sinh Viên:</label><br><br>
+            <label for="ho-ten-sinh-vien">Họ Tên Sinh Viên:</label><br><br>
+            <label for="email-sinh-vien">Email:</label><br><br>
+            <label for="dob">Ngày Sinh:</label><br><br>
+            <label for="regDate">Ngày Đăng Ký:</label><br><br>
+            <label for="uploadImage">Tải Ảnh:</label>
+        </div>
+
+        <div class="inp">
+            <input type="text" id="txtMa" name="ma_sinh_vien" required><br><br>
+            <input type="text" id="txtHT" name="ho_ten_sinh_vien" required><br><br>
+            <input type="text" id="txtEmail" name="Email" required onblur="layGiaTriEmail();"><br><br>
+            <input type="date" id="dob" name="dob" required><br><br>
+            <input type="date" id="regDate" name="regDate" required><br><br>
+            <input type="file" id="uploadImage" name="uploadImage" required><br><br>
+        </div>
+
+        <div class="clr"></div>
+        <br><br>
+        <div>
+            <button type="submit">Submit</button>
+            <button type="button" onclick="window.location.href='/'">Cancel</button>
+        </div>
+    </form>
+
+    <script>
+        function layGiaTriEmail() {
+            let elementEmail = document.getElementById("txtEmail").value;
+            let mauEmail = /^[a-zA-Z][a-zA-Z0-9_.-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (mauEmail.test(elementEmail)) {
+                console.log("Nhập đúng email");
+            } else {
+                alert("Email không hợp lệ. Vui lòng nhập đúng định dạng.");
+            }
+        }
+
+        function validateForm() {
+            const dobInput = document.getElementById("dob").value;
+            const regDateInput = document.getElementById("regDate").value;
+            const uploadImage = document.getElementById("uploadImage").value;
+
+            if (!dobInput || !regDateInput || !uploadImage) {
+                alert("Vui lòng nhập đầy đủ thông tin.");
+                return false;
+            }
+
+            const dob = new Date(dobInput);
+            if (isNaN(dob.getTime())) {
+                alert("Ngày sinh không hợp lệ!");
+                return false;
+            }
+
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const monthDiff = today.getMonth() - dob.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+
+            if (age < 18) {
+                alert("Tuổi phải lớn hơn 18.");
+                return false;
+            }
+
+            const regDate = new Date(regDateInput);
+            if (isNaN(regDate.getTime())) {
+                alert("Ngày đăng ký không hợp lệ!");
+                return false;
+            }
+
+            const minValidDate = new Date();
+            minValidDate.setDate(minValidDate.getDate() + 20);
+
+            if (regDate <= minValidDate) {
+                alert("Ngày đăng ký phải sau ngày hiện tại ít nhất 20 ngày.");
+                return false;
+            }
+
+            const fileExtension = uploadImage.split('.').pop().toLowerCase();
+            const validExtensions = ["png", "jpeg", "jpg"];
+            if (!validExtensions.includes(fileExtension)) {
+                alert("Tệp hình ảnh phải có định dạng PNG, JPEG hoặc JPG.");
+                return false;
+            }
+
+            alert("Tất cả dữ liệu hợp lệ!");
+            return true;
+        }
+    </script>
+</body>
+
+</html>
